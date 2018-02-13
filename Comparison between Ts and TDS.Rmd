@@ -1,0 +1,23 @@
+---
+title: "Build the Takens vectors"
+author: "Priyanga Dilini Talagala"
+date: "February 13, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(nonlinearTseries)
+library(plotly)
+```
+
+```{r buildtakenvectors, cache=TRUE }
+load("data/data1.rda")
+
+
+## This loop builds the Takens' vectors for a given collection of time series
+ts <- as.ts(data1[1,])
+takens<-nonlinearTseries::buildTakens(ts, 3, 1)
+plot(takens)
+plotdata<-
+```
