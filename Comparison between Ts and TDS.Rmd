@@ -2,22 +2,59 @@
 title: "Build the Takens vectors"
 author: "Priyanga Dilini Talagala"
 date: "February 13, 2018"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(nonlinearTseries)
+library(tidyverse)
 library(plotly)
 ```
 
-```{r buildtakenvectors, cache=TRUE }
+```{r data1, cache=TRUE }
 load("data/data1.rda")
 
+t <- nrow(data1)
+f <- ncol(data1)
+g <- as_tibble(data1) %>%
+  gather() %>%
+  mutate(key = rep((1:f), each = t)) %>%
+  mutate(Time = rep(1:t, f))
+colnames(g) <- c("Cable", "Value", "Time")
+p1 <- ggplot(g, aes(x = Time, y = Cable, fill = Value)) +
+  geom_tile() +
+  scale_fill_gradientn(
+    colours = c("#F0E442", "#000000", "#000000"),
+    values = c(0, 0.1, max(data1))
+  ) +
+  ylab("Time Series ID") +
+  scale_y_continuous(breaks = seq(0, 600, 100)) +
+  scale_x_continuous(breaks = seq(0, 1400, 200)) +
+  xlab("Time") +
+  theme(legend.position = "none", axis.title = element_text(size = 15))
+print(p1)
 
+
+
+```
+
+```{r buildtakenvectors, warning=FALSE, message=FALSE, cache=TRUE}
 ## This loop builds the Takens' vectors for a given collection of time series
-ts <- as.ts(data1[1,])
-takens<-nonlinearTseries::buildTakens(ts, 3, 1)
-plot(takens)
-plotdata<-
+
+gettakens<-function(x)
+{
+ts <- as.ts(x)
+takens<-nonlinearTseries::buildTakens(x, 3, 1)
+file_name<- paste()
+write.table(takens, "takens/data1/.txt", sep="\t")
+}
+
+
+plotdata<- as_tibble(takens)
+p <- plot_ly(plotdata, x = ~V1, y = ~V2, z = ~V3, size = I(3)) %>%
+  layout(title = "3D Scatter plot")
+p
 ```
